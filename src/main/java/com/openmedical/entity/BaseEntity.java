@@ -23,7 +23,7 @@ public class BaseEntity implements Serializable {
     @Column(name = "LAST_UPDATED_DATE")
     @UpdateTimestamp
     private Timestamp lastUpdatedDate;
-    @Column(name = "CREATED_BY",length = 60,nullable = false)
+    @Column(name = "CREATED_BY",length = 60)
     @CreatedBy
     private String createdBy;
     @Column(name = "LAST_UPDATED_BY",length = 60)

@@ -20,7 +20,7 @@ public class Address  extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID",nullable = false,updatable = false)
     private long id;
-    @Column(name = "FLAT_NUMBER",length = 5)
+    @Column(name = "FLAT_NUMBER",length = 10)
     private String flatNumber;
     @Column(name = "HOUSE_NUMBER",nullable = false,length = 10)
     private String houseNumber;

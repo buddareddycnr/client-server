@@ -41,8 +41,7 @@ public class OpenMedicalClient implements ApplicationRunner {
         while (true){
         String propertyValue = servicesUrls.get(new Random().nextInt(servicesUrls.size()));
         String[] separateUrl = propertyValue.split(",");
-            System.out.println("url "+separateUrl[0]);
-            System.out.println("method "+separateUrl[1]);
+            callServer(separateUrl[0],separateUrl[1]);
 
         }
     }

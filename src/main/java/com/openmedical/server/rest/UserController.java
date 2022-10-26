@@ -1,50 +1,49 @@
+
 package com.openmedical.server.rest;
 
+import com.openmedical.entity.Customer;
 import com.openmedical.server.service.UserService;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
 import io.github.bucket4j.Refill;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
-public class UserDeleteController {
+public class UserController {
+
     private UserService userService;
     private final Bucket bucket;
-
     @Autowired
-    public UserDeleteController(UserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        Bandwidth bandwidth = Bandwidth.classic(2, Refill.greedy(2, Duration.ofSeconds(1)));
+        Bandwidth bandwidth = Bandwidth.classic(5, Refill.greedy(5, Duration.ofSeconds(1)));
         this.bucket = Bucket4j.builder().addLimit(bandwidth).build();
     }
-    @DeleteMapping(value = "/delete")
-    @Transactional(timeout = 2000)
-    public ResponseEntity deleteUser(@RequestParam("emailId") String emailId){
+    @GetMapping(value = "/retrieveAll",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Customer>> getAll(){
         long start_time = System.currentTimeMillis();
-        userService.deleteUser(emailId);
+        List<Customer> users = userService.getUsers();
         long end_time = System.currentTimeMillis();
-        long diff = end_time-start_time;
-        if(diff>=150 && diff<=300){
-            return new ResponseEntity(emailId, HttpStatus.ACCEPTED);
+        long diff=end_time-start_time;
+        if(diff>250 && diff<500){
+            return ResponseEntity.ok(users);
         }else {
             try {
-                Thread.sleep(300-diff);
+                Thread.sleep(500-diff);
             } catch (InterruptedException e) {
                 ResponseEntity.internalServerError();
             }
         }
-        return new ResponseEntity(emailId, HttpStatus.ACCEPTED);
+        return ResponseEntity.ok(users);
     }
 }
-

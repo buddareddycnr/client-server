@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,6 +26,13 @@ public class ClientServerControllerAdvice extends ResponseEntityExceptionHandler
         body.put("timestamp", LocalDateTime.now());
         body.put("message", userNotFoundException.getMessage());
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<Object> sqlException(SQLException sqlException, WebRequest webRequest){
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", sqlException.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(UserSaveOrUpdateOperationFailedException.class)
     public ResponseEntity<Object> userSaveOrUpdateOperationFailedException(UserSaveOrUpdateOperationFailedException userSaveOrUpdateOperationFailedException, WebRequest webRequest){

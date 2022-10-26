@@ -9,6 +9,7 @@ import io.github.bucket4j.Refill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,20 +29,9 @@ public class UserCreateController {
         this.bucket = Bucket4j.builder().addLimit(bandwidth).build();
     }
     @PostMapping(value = "/save",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional(timeout = 71,timeoutString = "Request Timeout")
     public ResponseEntity<Customer> createUser(@RequestBody Customer customer){
-        long start_time = System.currentTimeMillis();
         Customer customer1 = userService.saveUser(customer);
-        long end_time = System.currentTimeMillis();
-        long diff = end_time-start_time;
-        if(diff>=35 && diff<=70){
-            return ResponseEntity.ok(customer1);
-        }else {
-            try {
-                Thread.sleep(70-diff);
-            } catch (InterruptedException e) {
-                ResponseEntity.internalServerError();
-            }
-        }
         return ResponseEntity.ok(customer1);
     }
 }

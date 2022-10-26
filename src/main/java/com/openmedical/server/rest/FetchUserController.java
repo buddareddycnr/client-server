@@ -10,6 +10,7 @@ import io.github.bucket4j.Refill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,20 +31,9 @@ public class FetchUserController {
         this.bucket = Bucket4j.builder().addLimit(bandwidth).build();
     }
     @GetMapping(value = "/fetchAll",produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional(timeout = 501)
     public ResponseEntity<List<Customer>> getAll(){
-        long start_time = System.currentTimeMillis();
         List<Customer> users = userService.getUsers();
-        long end_time = System.currentTimeMillis();
-        long diff=end_time-start_time;
-        if(diff>250 && diff<500){
-            return ResponseEntity.ok(users);
-        }else {
-            try {
-                Thread.sleep(500-diff);
-            } catch (InterruptedException e) {
-                ResponseEntity.internalServerError();
-            }
-        }
         return ResponseEntity.ok(users);
     }
 }
